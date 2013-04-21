@@ -2,7 +2,6 @@ package com.sgtcodfish.BTLBDesktop;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Vector;
 
 import javax.bluetooth.DeviceClass;
 import javax.bluetooth.DiscoveryListener;

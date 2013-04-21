@@ -1,6 +1,5 @@
 package com.sgtcodfish.BTLBDesktop;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -15,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -22,13 +22,17 @@ import javax.swing.UnsupportedLookAndFeelException;
  * Desktop portion of turning an android device into a bluetooth headset.
  * @author Ashley Davis (SgtCoDFish)
  */
-public class BTLBDesktop extends JFrame {
-	private static final long serialVersionUID = 10419L;
+public class BTLBDesktop {
+	private JFrame frame = null;
 	public static final boolean DEBUG = true;
 	
-	public static BTLBDesktop mainInstance = null; // singleton class
+	public static final String defaultTitle = "BTLB :: BlueToothLoopBack";
 	
+	
+	public static BTLBDesktop mainInstance = null; // singleton class
 	private JLabel infoLabel = null;
+	//infoLabel is used before device select to display a progress message,
+	//during device select for instructions
 	private AudioRecorder audioRecorder = null;
 	private BluetoothHandler bluetoothHandler = null;
 	
@@ -53,7 +57,7 @@ public class BTLBDesktop extends JFrame {
 		
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-            	new BTLBDesktop("BTLB :: BlueToothLoopBack");
+            	new BTLBDesktop(BTLBDesktop.defaultTitle);
             }
         });
 	}
@@ -63,8 +67,6 @@ public class BTLBDesktop extends JFrame {
 	 * @param swingName The title of the window.
 	 */
 	public BTLBDesktop(String swingName) {
-		super(swingName);
-		
 		if(BTLBDesktop.mainInstance != null) {
 			System.err.println("Trying to create 2 BTLBDesktops - exiting.");
 			System.exit(1);
@@ -72,14 +74,13 @@ public class BTLBDesktop extends JFrame {
 			BTLBDesktop.mainInstance = this;
 		}
 		
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setVisible(true);
-		this.setLayout(new GridLayout(3, 1));
-		this.setMinimumSize(new Dimension(320, 320));
+		setupFrame(swingName);
+		
 		infoLabel = new JLabel("Please wait while Bluetooth devices are enumerated...");
-		this.add(infoLabel);
-		this.pack();
-		this.paintAll(getGraphics());
+		infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		frame.add(infoLabel);
+		frame.pack();
+		frame.paintAll(frame.getGraphics());
 		audioRecorder = new AudioRecorder(); 
 		bluetoothHandler = new BluetoothHandler();
 		
@@ -113,7 +114,7 @@ public class BTLBDesktop extends JFrame {
 		
 		final JList<String> deviceList = new JList<String>(model);
 		
-		this.add(deviceList);
+		frame.add(deviceList);
 		
 		// create a confirmation button
 		JButton confButton = new JButton("Use the selected device as remote headset.");
@@ -125,9 +126,9 @@ public class BTLBDesktop extends JFrame {
 				}
 			}
 		});
-		this.add(confButton);
-		this.revalidate();
-		this.pack();
+		frame.add(confButton);
+		//frame.revalidate();
+		frame.pack();
 	}
 	
 	/**
@@ -140,7 +141,24 @@ public class BTLBDesktop extends JFrame {
 			System.exit(1);
 		}
 		
-		System.out.println("Startstream woo!\n" + selectedDevice);
+		setupFrame(BTLBDesktop.defaultTitle);
+	}
+	
+	/**
+	 * Sets up a default frame for use.
+	 */
+	private void setupFrame(String title) {
+		if(frame != null) {
+			frame.removeAll();
+			frame.dispose();
+			frame = null;
+		}
+		
+		frame = new JFrame(title);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+		frame.setLayout(new GridLayout(3, 1));
+		frame.setMinimumSize(new Dimension(320, 320));
 	}
 
 	/**
