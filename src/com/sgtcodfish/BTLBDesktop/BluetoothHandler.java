@@ -1,6 +1,7 @@
 package com.sgtcodfish.BTLBDesktop;
 
 import javax.bluetooth.*;
+
 import com.intel.bluetooth.*;
 
 /**
@@ -12,6 +13,8 @@ public class BluetoothHandler extends Thread {
 	private boolean DEBUG;
 	
 	LocalDevice localDevice = null;
+	
+	DiscoveryListener discoveryListener = null;
 	
 	public BluetoothHandler() {
 		super(threadName);
@@ -25,18 +28,15 @@ public class BluetoothHandler extends Thread {
 			System.out.println(BlueCoveImpl.NATIVE_LIB_MS);
 		}
 		
-		DiscoveryListener discoveryListener = new BTLBDiscoveryListener();
+		discoveryListener = new BTLBDiscoveryListener();
 		
 		try {
 			localDevice = LocalDevice.getLocalDevice();
 			if(DEBUG) {
 				System.out.println("Local device address: " + localDevice.getBluetoothAddress());
 			}
-		} catch(BluetoothStateException bse) {
-			System.out.println(bse);
-		}
-		
-		try {
+			
+			
 			localDevice.getDiscoveryAgent().startInquiry(DiscoveryAgent.GIAC, discoveryListener);
 			
 			long startTime = System.currentTimeMillis();
@@ -69,5 +69,21 @@ public class BluetoothHandler extends Thread {
 	
 	public void run() {
 		
+	}
+	
+	/**
+	 * Attempt to discover services on remoteDevice
+	 * 
+	 * BROKEN ATM
+	 * @param remoteDevice
+	 */
+	public void discoverServices(RemoteDevice remoteDevice) {
+		try {
+			int attrIDs[] = new int[] { 0x0100 };
+			UUID []uuidSearch = new UUID[] { new UUID(0x1041) };
+			localDevice.getDiscoveryAgent().searchServices(attrIDs, uuidSearch, remoteDevice, discoveryListener);
+		} catch(BluetoothStateException bse) {
+			System.out.println(bse);
+		}
 	}
 }

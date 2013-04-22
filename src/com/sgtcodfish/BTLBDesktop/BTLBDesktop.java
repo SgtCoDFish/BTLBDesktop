@@ -55,6 +55,8 @@ public class BTLBDesktop {
 			printMixerDetails(AudioSystem.getMixer(getPrimaryCaptureDriver()));
 		}
 		
+		System.setProperty("bluecove.jsr82.psm_minimum_off", "true");
+		
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
             	new BTLBDesktop(BTLBDesktop.defaultTitle);
@@ -142,6 +144,25 @@ public class BTLBDesktop {
 		}
 		
 		setupFrame(BTLBDesktop.defaultTitle);
+		JButton discoverButton = new JButton("Search for services!");
+		discoverButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				bluetoothHandler.discoverServices(selectedDevice);
+			}
+		});
+		frame.add(discoverButton);
+		frame.pack();
+		bluetoothHandler.discoverServices(selectedDevice);
+//		try {
+//			StreamConnectionNotifier service = (StreamConnectionNotifier)Connector.open("btspp://localhost:" + new UUID(1041910419).toString() + ";name=BTLB");
+//			StreamConnection conn = (StreamConnection)service.acceptAndOpen();
+//			PrintStream os = (PrintStream)conn.openOutputStream();
+//			os.println("Hello World");
+//		} catch (IOException e) {
+//			System.err.println("IO Error in StreamConnectionNotifier");
+//			e.printStackTrace();
+//		}
 	}
 	
 	/**
