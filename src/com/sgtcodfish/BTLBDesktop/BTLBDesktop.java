@@ -4,10 +4,16 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.HashMap;
 
 import javax.bluetooth.RemoteDevice;
+import javax.microedition.io.Connector;
+import javax.microedition.io.StreamConnection;
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.Line;
 import javax.sound.sampled.Mixer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -52,10 +58,9 @@ public class BTLBDesktop {
 		
 		if(DEBUG) { 
 			printMixers();
-			printMixerDetails(AudioSystem.getMixer(getPrimaryCaptureDriver()));
 		}
 		
-		System.setProperty("bluecove.jsr82.psm_minimum_off", "true");
+		//System.setProperty("bluecove.jsr82.psm_minimum_off", "true");
 		
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -97,14 +102,7 @@ public class BTLBDesktop {
 	 */
 	public void addBluetoothDeviceList(BTLBDiscoveryListener discoveryListener) {
 		final HashMap<String, RemoteDevice> deviceListCopy = new HashMap<String, RemoteDevice>(discoveryListener.discoveredDevices);
-//		for(Component c : this.getComponents()) {
-//			if (c instanceof JLabel) {
-//				JLabel temp = (JLabel) c;
-//				temp.setText("Select a device from the list below to communicate with:");
-//				temp.paint(getGraphics());
-//				this.
-//			}
-//		}
+		
 		// add a descriptive label, replacing our current label.
 		infoLabel.setText("Select a device from the list below to communicate with:");
 		
@@ -151,18 +149,45 @@ public class BTLBDesktop {
 				bluetoothHandler.discoverServices(selectedDevice);
 			}
 		});
+		
+		
+		JButton testButton = new JButton("Send test data!");
+		testButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				sendTestData();
+			}
+		});
+		
+		
 		frame.add(discoverButton);
+		frame.add(testButton);
 		frame.pack();
-		bluetoothHandler.discoverServices(selectedDevice);
-//		try {
-//			StreamConnectionNotifier service = (StreamConnectionNotifier)Connector.open("btspp://localhost:" + new UUID(1041910419).toString() + ";name=BTLB");
-//			StreamConnection conn = (StreamConnection)service.acceptAndOpen();
-//			PrintStream os = (PrintStream)conn.openOutputStream();
-//			os.println("Hello World");
-//		} catch (IOException e) {
-//			System.err.println("IO Error in StreamConnectionNotifier");
-//			e.printStackTrace();
-//		}
+		
+	}
+	
+	public void sendTestData() {
+		System.out.println("In sendTestData()");
+		String url = bluetoothHandler.discoverServices(selectedDevice);
+		System.out.println("aaaa" + url);
+		System.out.println("commencing sending");
+		if(!url.equals("")) {
+			try {
+				if(DEBUG) {
+					System.out.println("Connecting to " + url);
+				}
+				StreamConnection conn = (StreamConnection)Connector.open(url);
+				java.io.OutputStream ops = conn.openOutputStream();
+				ops.write(new byte[] {1, 0, 4, 1, 9});
+				//conn.close();
+				if(DEBUG) {
+					System.out.println("Wrote to stream.");
+				}
+			} catch (IOException e) {
+				System.err.println("IO Error in StreamConnectionNotifier");
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**
@@ -191,30 +216,6 @@ public class BTLBDesktop {
 	}
 	
 	/**
-	 * Finds a "primary sound capture driver". May only work in Windows Vista+
-	 * @return The Mixer.Info relating to the primary capture driver, or null if no such driver was found.
-	 */
-	public static Mixer.Info getPrimaryCaptureDriver() {
-		final String searchName = "Primary Sound Capture Driver";
-		Mixer.Info infos[] = AudioSystem.getMixerInfo();
-		
-		for(Mixer.Info i : infos) {
-			if(i.getName().equals(searchName)) {
-				if(DEBUG) {
-					System.out.println("Found primary sound capture driver:" + i);
-				}
-				
-				return i;
-			}
-		}
-		
-		if(DEBUG) {
-			System.out.println("Failed to find sound capture driver, name=\"" + searchName + "\".");
-		}
-		return null;
-	}
-	
-	/**
 	 * Prints a formatted list of all detected mixers and info about each.
 	 */
 	public static void printMixers() {
@@ -232,6 +233,21 @@ public class BTLBDesktop {
 			
 			System.out.println(title);
 			System.out.println(i + "\n");
+			
+			Line.Info lineInfos[] = AudioSystem.getMixer(i).getTargetLineInfo();
+			System.out.println(lineInfos.length + " lines detected:");
+			for(Line.Info lineIn : lineInfos) {
+				System.out.println("    " + lineIn);
+				if(!i.getName().contains("Port")) {
+					DataLine.Info dlInfo = (DataLine.Info)lineIn;
+					AudioFormat afs[] = dlInfo.getFormats();
+					for (AudioFormat af : afs) {
+						System.out.println("        " + af);
+					}
+				}
+			}
+			
+			System.out.println();
 		}
 	}
 }

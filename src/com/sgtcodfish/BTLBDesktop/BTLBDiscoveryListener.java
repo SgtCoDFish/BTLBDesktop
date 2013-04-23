@@ -2,6 +2,7 @@ package com.sgtcodfish.BTLBDesktop;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Vector;
 
 import javax.bluetooth.DataElement;
 import javax.bluetooth.DeviceClass;
@@ -14,10 +15,10 @@ import javax.bluetooth.ServiceRecord;
  */
 public class BTLBDiscoveryListener implements DiscoveryListener {
 	private boolean DEBUG;
-	//public Vector<RemoteDevice> discoveredDevices = new Vector<RemoteDevice>();
-	private boolean done = false;
+	public boolean done = false;
+	public boolean serviceDone = false;
 	public HashMap<String, RemoteDevice> discoveredDevices = new HashMap<String, RemoteDevice>();
-	public HashMap<String, ServiceRecord> discoveredServices = new HashMap<String, ServiceRecord>();
+	public Vector<String> discoveredServices = new Vector<String>();
 	
 	public BTLBDiscoveryListener() {
 		this.DEBUG = BTLBDesktop.DEBUG;
@@ -30,11 +31,11 @@ public class BTLBDiscoveryListener implements DiscoveryListener {
 		try {
 			friendlyName = btDevice.getFriendlyName(false);
 		} catch(IOException ioe) {
-			System.err.println("Couldn't get friendly name for: " + btDevice.getBluetoothAddress() + "\n" + ioe);
+			System.err.println("BTLBDL: Couldn't get friendly name for: " + btDevice.getBluetoothAddress() + "\n" + ioe);
 		}
 		
 		if(DEBUG) {
-			System.out.println("\nDevice discovered: " + btDevice.getBluetoothAddress() + " : " + friendlyName);
+			System.out.println("BTLBDL: Device discovered: " + btDevice.getBluetoothAddress() + " : " + friendlyName);
 		}
 		
 		discoveredDevices.put(friendlyName + ": " + btDevice.getBluetoothAddress(), btDevice);
@@ -47,27 +48,30 @@ public class BTLBDiscoveryListener implements DiscoveryListener {
 		for(int i = 0; i < servRecord.length; i++) {
 			String url = servRecord[i].getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false);
 			if(url == null) continue;
-			discoveredServices.put(url, servRecord[i]);
+			discoveredServices.add(url);
 			DataElement serviceName = servRecord[i].getAttributeValue(0x0100);
 			if(serviceName != null) {
-				System.out.println("Service " + serviceName.getValue() + " found " + url);
+				System.out.println("BTLBDL: Service " + serviceName.getValue() + " found " + url);
 			} else {
-				System.out.println("Service found " + url);
+				System.out.println("BTLBDL: Service found " + url);
 			}
 		}
 	}
 
 	@Override
 	public void serviceSearchCompleted(int transID, int respCode) {
+		done = true;
 		if(respCode == SERVICE_SEARCH_NO_RECORDS) {
-			System.out.println("Info: Transaction (" + transID + ") returned SERVICE_SEARCH_NO_RECORDS.");
+			System.out.println("BTLBDL: Info: Transaction (" + transID + ") returned SERVICE_SEARCH_NO_RECORDS.");
+		} else {
+			System.out.println("BTLBDL: Info: Transaction (" + transID + ") returned " + discoveredServices.size() + " services.");
 		}
 	}
 
 	@Override
 	public void inquiryCompleted(int discType) {
 		if(DEBUG) {
-			System.out.println("Inquiry complete!");
+			System.out.println("BTLBDL: Inquiry complete!");
 		}
 		
 		done = true;
