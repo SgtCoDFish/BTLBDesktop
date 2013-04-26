@@ -167,10 +167,9 @@ public class BTLBDesktop {
 	}
 	
 	public void sendTestData() {
-		System.out.println("In sendTestData()");
 		String url = bluetoothHandler.discoverServices(selectedDevice);
-		System.out.println("aaaa" + url);
-		System.out.println("commencing sending");
+		System.out.println("SendTestData: URL: " + url);
+		System.out.println("SendTestData: Sending...");
 		if(!url.equals("")) {
 			try {
 				if(DEBUG) {
@@ -181,10 +180,10 @@ public class BTLBDesktop {
 				ops.write(new byte[] {1, 0, 4, 1, 9});
 				//conn.close();
 				if(DEBUG) {
-					System.out.println("Wrote to stream.");
+					System.out.println("SendTestData: Wrote to stream.");
 				}
 			} catch (IOException e) {
-				System.err.println("IO Error in StreamConnectionNotifier");
+				System.err.println("SendTestData: IO Error in StreamConnectionNotifier");
 				e.printStackTrace();
 			}
 		}

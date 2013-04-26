@@ -132,26 +132,10 @@ public class AudioRecorder extends Thread {
 					int timesRead = 0;
 					
 					while(timesRead < framesToRead) {
-						int bytesRead = inputStream.read(buffer, frameSizeInBytes * timesRead, frameSizeInBytes);
-						System.out.println("BytesRead=" + bytesRead);
+						inputStream.read(buffer, frameSizeInBytes * timesRead, frameSizeInBytes);
+						
+						//System.out.println("BytesRead=" + inputStream.read(buffer, frameSizeInBytes * timesRead, frameSizeInBytes));
 						timesRead++;
-					}
-					
-					System.out.println("Input done, sleeping for 2s and playing back.");
-					
-					// play back
-					try {
-						Thread.sleep(2000);
-						SourceDataLine outLine = AudioSystem.getSourceDataLine(line.getFormat());
-						outLine.open();
-						outLine.start();
-						
-						outLine.write(buffer, 0, buffer.length);
-						
-						outLine.stop();
-						outLine.close();
-					} catch (Exception e) {
-						System.out.println(e);
 					}
 				} catch(IOException ioe) {
 					System.out.println(ioe);

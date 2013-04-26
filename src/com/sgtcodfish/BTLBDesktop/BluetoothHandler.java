@@ -1,6 +1,8 @@
 package com.sgtcodfish.BTLBDesktop;
 
 import javax.bluetooth.*;
+import javax.microedition.io.Connector;
+import javax.microedition.io.StreamConnection;
 
 import com.intel.bluetooth.*;
 
@@ -11,7 +13,7 @@ import com.intel.bluetooth.*;
 public class BluetoothHandler extends Thread {
 	private static final String threadName = "BTLB BluetoothHandler thread";
 	public static final UUID BTLB_UUID = new UUID("08abb94d2b1644e9ae95e2d18b614496", false);
-	private boolean DEBUG;
+	private boolean DEBUG = false;
 	
 	public LocalDevice localDevice = null;
 	
@@ -25,11 +27,8 @@ public class BluetoothHandler extends Thread {
 	
 	public BluetoothHandler() {
 		super(threadName);
-		init(BTLBDesktop.DEBUG);
-	}
-	
-	private void init(boolean DEBUG) {
-		this.DEBUG = DEBUG;
+		
+		this.DEBUG = BTLBDesktop.DEBUG;
 		
 		if(DEBUG) {
 			System.out.println(BlueCoveImpl.NATIVE_LIB_MS);
