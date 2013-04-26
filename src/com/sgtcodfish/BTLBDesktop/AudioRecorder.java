@@ -12,13 +12,13 @@ import javax.sound.sampled.FloatControl.Type;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
-import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
 /**
  * Records sound as it's played and stores it to be sent over bluetooth.
  * @author Ashley Davis (SgtCoDFish)
  */
+@Deprecated
 public class AudioRecorder extends Thread {
 	private static final String threadName = "BTLB AudioRecorder thread";
 	private static boolean DEBUG = BTLBDesktop.DEBUG;

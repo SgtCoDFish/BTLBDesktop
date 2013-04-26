@@ -1,15 +1,19 @@
 package com.sgtcodfish.BTLBDesktop;
 
-import javax.bluetooth.*;
-import javax.microedition.io.Connector;
-import javax.microedition.io.StreamConnection;
+import javax.bluetooth.BluetoothStateException;
+import javax.bluetooth.DiscoveryAgent;
+import javax.bluetooth.DiscoveryListener;
+import javax.bluetooth.LocalDevice;
+import javax.bluetooth.RemoteDevice;
+import javax.bluetooth.UUID;
 
-import com.intel.bluetooth.*;
+import com.intel.bluetooth.BlueCoveImpl;
 
 /**
  * Handles all the bluetooth communications for BTLB.
  * @author Ashley Davis (SgtCoDFish)
  */
+@Deprecated
 public class BluetoothHandler extends Thread {
 	private static final String threadName = "BTLB BluetoothHandler thread";
 	public static final UUID BTLB_UUID = new UUID("08abb94d2b1644e9ae95e2d18b614496", false);
@@ -61,16 +65,10 @@ public class BluetoothHandler extends Thread {
 				
 				System.out.print("BTHandler: Starting Bluetooth discovery.");
 				while(!((BTLBDiscoveryListener) discoveryListener).isDone()) {
-//					long thisTime = System.currentTimeMillis();
-//					
-//					if(thisTime - startTime > 2000) {
-//						System.out.print(".");
-//						startTime = thisTime;
-//					}
 				}
 				
 				System.out.println("BTHandler: Bluetooth discovery took " + (System.currentTimeMillis() - absoluteStart) + "ms.");
-				BTLBDesktop.mainInstance.addBluetoothDeviceList((BTLBDiscoveryListener) discoveryListener);
+				//BTLBDesktop.mainInstance.addBluetoothDeviceList((BTLBDiscoveryListener) discoveryListener);
 				
 				mode = BTHandlerMode.TRANSMIT;
 			} catch(BluetoothStateException bse) {

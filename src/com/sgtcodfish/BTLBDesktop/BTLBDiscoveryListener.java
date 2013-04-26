@@ -41,10 +41,18 @@ public class BTLBDiscoveryListener implements DiscoveryListener {
 		discoveredDevices.put(friendlyName + ": " + btDevice.getBluetoothAddress(), btDevice);
 	}
 	
+	@Override
+	public void inquiryCompleted(int discType) {
+		if(DEBUG) {
+			System.out.println("BTLBDL: Inquiry complete!");
+		}
+		
+		done = true;
+	}
+	
 	//http://homepages.ius.edu/RWISMAN/C490/html/JavaandBluetooth.htm - reference
 	@Override
 	public void servicesDiscovered(int transID, ServiceRecord[] servRecord) {
-		System.out.println("Services discovered: ID = " + transID);
 		for(int i = 0; i < servRecord.length; i++) {
 			String url = servRecord[i].getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false);
 			if(url == null) continue;
@@ -68,14 +76,7 @@ public class BTLBDiscoveryListener implements DiscoveryListener {
 		}
 	}
 
-	@Override
-	public void inquiryCompleted(int discType) {
-		if(DEBUG) {
-			System.out.println("BTLBDL: Inquiry complete!");
-		}
-		
-		done = true;
-	}
+
 	
 	public boolean isDone() {
 		return done;
