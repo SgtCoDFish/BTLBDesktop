@@ -34,17 +34,15 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+
 /**
  * Desktop portion of turning an android device into a bluetooth headset.
  * 
- * This class is the base UI window. When this dialog is closed, the app should
+ * This class is the base UI window. When this window is closed, the app should
  * close.
  * @author Ashley Davis (SgtCoDFish)
  */
 public class BTLBDesktop {
-	// ------------------------------------------------------------------------
-	// POST REFACTOR VARS
-	// ------------------------------------------------------------------------
 	public static final boolean DEBUG = true;
 	public static final String defaultTitle = "BTLB :: BlueToothLoopBack";
 	public static final String defaultPropertiesFileName = "./BTLB.properties";	
@@ -68,18 +66,15 @@ public class BTLBDesktop {
 	private JCheckBoxMenuItem saveCheckboxMenuItem = null; // member variable for global access
 	
 	private JLabel btDeviceLabel = null;
-	private final String btDeviceLabelText = "Selected Bluetooth Device: ";
+	private final String btDeviceLabelText = "Selected Bluetooth Device:\n";
 	
 	private JLabel audioDeviceLabel = null;
-	private final String audioDeviceLabelText = "Selected Audio Device: ";
+	private final String audioDeviceLabelText = "Selected Audio Device:\n";
 	
 	private JButton connectButton = null;
 	private final String buttonTextConnect = "Connect!";
 	private final String buttonTextDisconnect = "Disconnect!";
-	
-	// -----------------------------------------------------------------------
-	// NEW FUNCTIONS POST REFACTOR
-	// -----------------------------------------------------------------------
+
 	/**
 	 * @param args Not used
 	 */

@@ -70,7 +70,7 @@ public class AudioRecorder extends Thread {
 					
 				}
 				
-				AudioFormat audioFormat = new AudioFormat(Encoding.PCM_SIGNED, 44100.0f, 16, 2, 4, 44100.0f, false);
+				AudioFormat audioFormat = new AudioFormat(Encoding.PCM_SIGNED, 22500.0f, 16, 2, 4, 22500.0f, false);
 				DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
 				if(!AudioSystem.isLineSupported(dataLineInfo)) {
 					System.out.println("AudioRecorder: Unsupported format!");
